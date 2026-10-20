@@ -20,7 +20,7 @@ reply = gateway.complete("Summarise the ticket from ana@example.com")
 Run the demo and the tests:
 
 ```
-python3 examples/demo.py
+PYTHONPATH=. python3 examples/demo.py
 python3 -m unittest -v
 ```
 
