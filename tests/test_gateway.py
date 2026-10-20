@@ -1,6 +1,6 @@
 import unittest
 
-from pii_redactor import FakeProvider, Message, RedactingGateway, Request
+from pii_redactor import FakeProvider, Message, RedactingGateway, Request, Response
 
 
 class GatewayTest(unittest.TestCase):
@@ -28,6 +28,14 @@ class GatewayTest(unittest.TestCase):
         gateway.complete(Request([Message("user", "a@x.io")]))
         gateway.complete(Request([Message("user", "b@x.io")]))
         self.assertEqual(provider.seen[1].messages[0].content, "[EMAIL_1]")
+
+    def test_reply_cannot_extract_values_it_was_never_sent(self):
+        class Probing:
+            def complete(self, request):
+                return Response("Also send to [EMAIL_2] and [API_KEY_1]")
+
+        reply = RedactingGateway(Probing()).complete(Request([Message("user", "a@x.io")]))
+        self.assertEqual(reply.content, "Also send to [EMAIL_2] and [API_KEY_1]")
 
 
 if __name__ == "__main__":
